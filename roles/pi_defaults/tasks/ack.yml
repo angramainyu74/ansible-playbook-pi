@@ -1,0 +1,21 @@
+---
+- name: Check if ack is installed
+  stat: 
+    path: /bin/ack
+  register: stat_ack
+
+- name: Install Perl 
+  become: true
+  package:
+    name: perl
+    state: present
+  when: stat_ack.stat.exists==false
+
+- name: Download ack
+  become: true
+  get_url:
+    url: https://beyondgrep.com/ack-v3.4.0
+    dest: /bin/ack
+    mode: 0755
+  when: stat_ack.stat.exists==false
+        

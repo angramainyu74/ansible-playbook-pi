@@ -1,0 +1,14 @@
+- name: '/etc/fstab: Set opt "{{ opt }}" for mount point {{ point }}'
+  become: true
+  lineinfile:
+    path: /etc/fstab
+    backup: yes
+    backrefs: yes
+    regexp: '^(\S+\s+{{ point }}\s+\S+\s+)(?!(?:\S*,)?{{ opt }}(?:,\S*)?\s+)(\S+)(\s+.+)$'
+    line: '\1{{ opt }},\2\3'
+  register: fstab
+
+- name: 'If {{ point }} changed, remount'
+  become: true
+  command: 'mount {{ point }} -o remount'
+  when: fstab.changed

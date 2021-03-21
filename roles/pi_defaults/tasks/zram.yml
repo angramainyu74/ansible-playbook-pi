@@ -1,0 +1,32 @@
+---
+- name: Check if zram exists
+  stat: path=/etc/zram-swap-config.conf
+  register: zram_status
+
+- name: Install Git
+  become: true
+  package:
+    name: git
+    state: present
+  when: not(zram_status.stat.exists)
+
+- name: Download zram
+  become: false
+  git:
+    repo: https://github.com/StuartIanNaylor/zram-swap-config
+    dest: /tmp/zram
+  when: not(zram_status.stat.exists)
+
+- name: Set Perms
+  become: false
+  file:
+    path: /tmp/zram/install.sh
+    mode: '0777'
+  when: not(zram_status.stat.exists)
+
+- name: Install zram
+  become: true
+  shell: "cd /tmp/zram && /tmp/zram/install.sh > /tmp/zram/install.log 2>&1"
+  when: not(zram_status.stat.exists)
+
+

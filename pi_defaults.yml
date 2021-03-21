@@ -1,0 +1,7 @@
+---
+- name: Common Pi Setup Tasks
+  hosts: all
+
+  roles:
+    - pi_defaults
+

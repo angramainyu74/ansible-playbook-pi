@@ -1,0 +1,54 @@
+---
+- name: Check if log2ram exists
+  stat: path=/usr/local/bin/log2ram
+  register: log2ram_status
+
+- name: Install Git
+  become: true
+  package:
+    name: git
+    state: present
+  when: not(log2ram_status.stat.exists)
+
+- name: Download log2ram 
+  become: false
+  git:
+    repo: https://github.com/azlux/log2ram
+    dest: /tmp/log2ram
+  when: not(log2ram_status.stat.exists)
+
+- name: Set Perms
+  become: false
+  file:
+    path: /tmp/log2ram/install.sh
+    mode: '0777'
+  when: not(log2ram_status.stat.exists)
+
+- name: Install log2ram
+  become: true
+  shell: "cd /tmp/log2ram && /tmp/log2ram/install.sh > /tmp/log2ram/install.log 2>&1"
+  register: log2ram_install
+  when: not(log2ram_status.stat.exists)
+
+- name: Customize log2ram.
+  become: true
+  lineinfile:
+    dest: /etc/log2ram.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    backup: true
+    mode: 0644
+  with_items:
+    - regexp: "^SIZE"
+      line: "SIZE=40M"
+    - regexp: "^ZL2R"
+      line: "ZL2R=true"
+    - regexp: "^LOG_DISK_SIZE"
+      line: "LOG_DISK_SIZE=100M"
+  when: not(log2ram_install is skipped)
+
+- name: Reboot
+  become: true
+  reboot:
+  when: not(log2ram_install is skipped)

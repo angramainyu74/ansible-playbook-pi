@@ -1,0 +1,14 @@
+---
+- name: Check if swap enabled
+  shell: swapon -s | grep -v zram | wc -l
+  register: swap_enabled
+  changed_when: false
+
+- name: Disable swap
+  shell: "{{ item }}"
+  with_items: 
+    - dphys-swapfile swapoff
+    - dphys-swapfile uninstall
+    - update-rc.d dphys-swapfile disable
+  when: swap_enabled.stdout != "1" and swap_enabled.stdout != "0"
+

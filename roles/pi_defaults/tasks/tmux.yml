@@ -1,0 +1,20 @@
+---
+- name: Check if tmux is installed
+  stat:
+    path: /bin/tmux
+  register: stat_tmux
+
+- name: Install tmux
+  become: true
+  package:
+    name: tmux
+    state: present
+  when: stat_tmux.stat.exists==false
+
+- name: Download tmux config
+  become: false
+  get_url:
+    url: https://pastebin.com/raw/Vy5jaWGg
+    dest: ~/.tmux.conf
+  when: stat_tmux.stat.exists==false
+        

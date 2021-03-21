@@ -1,0 +1,10 @@
+---
+- name: Ping check
+  hosts: pi0 
+  become: true 
+
+  tasks:
+  - name: Ping
+    ping:
+
+

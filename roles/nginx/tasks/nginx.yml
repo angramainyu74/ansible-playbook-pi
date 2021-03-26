@@ -1,0 +1,49 @@
+---
+- name: Install nginx
+  become: true
+  package:
+    name: 
+      - nginx
+      - apache2-utils
+    state: present
+
+- name: Copy index.html
+  become: true
+  template: src=index.html dest=/var/www/html
+
+- name: Remove index.nginx-debian.html
+  become: true
+  file:
+    path: /var/www/html/index.nginx-debian.html
+    state: absent
+
+- name: Copy nginx file
+  become: true
+  template: src=default.conf dest=/etc/nginx/sites-enabled/default
+  notify: restart nginx
+
+- name: Create files directory
+  become: true
+  file:
+    path: /var/www/html/files
+    state: directory
+    mode: '0744'
+
+- name: Check for htpasswd file
+  stat:
+    path: /var/www/.htpasswd
+  register: htpasswd_file
+
+- name: Create htpasswd file
+  become: true
+  command: htpasswd -bc /var/www/.htpasswd {{ www_user }} {{ www_password }}
+  when: htpasswd_file.stat.exists == false
+
+- name: Set www ownership
+  become: true
+  file:
+    path: /var/www
+    owner: www-data
+    group: www-data
+    recurse: true
+

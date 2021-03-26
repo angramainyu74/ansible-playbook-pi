@@ -1,0 +1,7 @@
+---
+- name: Install and configure nginx
+  hosts: pi4_0
+
+  roles:
+    - nginx
+

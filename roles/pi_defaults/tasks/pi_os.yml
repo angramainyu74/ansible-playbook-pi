@@ -2,7 +2,7 @@
 - name: Set timezone to NA/Eastern
   become: true
   timezone:
-    name: America/New_York
+    name: America/Toronto
 
 - name: Ensure localisation files for '{{ config_system_locale }}' are available
   become: true

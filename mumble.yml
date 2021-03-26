@@ -1,0 +1,7 @@
+---
+- name: Install and configure mumble-server
+  hosts: octopi
+
+  roles:
+    - mumble
+

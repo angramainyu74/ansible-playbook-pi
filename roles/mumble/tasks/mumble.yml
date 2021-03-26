@@ -1,0 +1,65 @@
+---
+- name: Check if mumble is installed
+  stat:
+    path: /bin/mumble-server
+  register: stat_mumble
+
+- name: Install mumble
+  become: true
+  package:
+    name: mumble-server
+    state: present
+  when: stat_mumble.stat.exists==false
+
+- name: Configure mumble start
+  become: true
+  debconf:
+    name: mumble-server
+    question: mumble-server/start_daemon
+    value: "True"
+    vtype: string
+
+- name: Configure mumble priority
+  become: true
+  debconf:
+    name: mumble-server
+    question: mumble-server/use_capabilities
+    value: "True"
+    vtype: string
+
+    #- name: Configure mumble admin password
+    #  become: true
+    #  debconf:
+    #    name: mumble-server
+    #    question: mumble-server/password
+    #    value: "secretadminpass"
+    #    vtype: password
+    #  no_log: true
+
+- name: Customize mumble-server.ini
+  become: true
+  lineinfile:
+    dest: /etc/mumble-server.ini
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    backup: true
+  with_items:
+    - regexp: "^serverpassword="
+      line: "serverpassword=testserverpass"
+    - regexp: "^bandwidth="
+      line: "bandwidth=128000"
+    - regexp: "^users="
+      line: "users=10"
+
+- name: Restart mumble
+  become: true
+  service:
+    name: mumble-server
+    state: restarted
+
+- name: Set admin password via murmurd since debconf doesn't work
+  become: true
+  shell: murmurd -ini /etc/mumble-server.ini -supw secretadminpass
+  register: murmur_supw
+  failed_when: "'Superuser password set on server' not in murmur_supw.stderr"

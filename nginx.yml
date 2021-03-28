@@ -1,6 +1,6 @@
 ---
 - name: Install and configure nginx
-  hosts: pi4_0
+  hosts: all
 
   roles:
     - nginx

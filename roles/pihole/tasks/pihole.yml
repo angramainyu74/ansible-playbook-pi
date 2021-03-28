@@ -1,0 +1,60 @@
+---
+- name: Check if pihole exists
+  stat: path=/usr/local/bin/pihole
+  register: pihole_status
+
+- name: Install Git
+  become: true
+  package:
+    name: git
+    state: present
+  when: not(pihole_status.stat.exists)
+
+- name: Download pihole 
+  become: false
+  git:
+    repo: https://github.com/pi-hole/pi-hole.git
+    dest: /tmp/pihole
+    depth: "1"
+  when: not(pihole_status.stat.exists)
+
+- name: Create /etc/pihole
+  become: true
+  file:
+    state: directory
+    path: /etc/pihole
+
+- name: Copy setupVars.conf file
+  become: true
+  template:
+    src: setupVars.conf
+    dest: /etc/pihole/setupVars.conf
+
+- name: Encrypt password
+  shell: "echo -n P@ssw0rd | sha256sum | awk '{printf \"%s\",$1 }' | sha256sum | awk '{printf \"%s\",$1 }'"
+  register: encpass
+  when: "pihole_password | default('', true) | trim != ''"
+
+- name: Set password variable
+  set_fact: 
+    encpasstxt: "{{encpass.stdout if (pihole_password | default('', true) | trim != '') else '' }}"
+
+- name: Customize pihole.
+  become: true
+  lineinfile:
+    dest: /etc/pihole/setupVars.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    backup: true
+    mode: 0644
+  with_items:
+    - regexp: "^IPV4_ADDRESS="
+      line: "IPV4_ADDRESS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/16"
+    - regexp: "^WEBPASSWORD="
+      line: "WEBPASSWORD={{ encpasstxt }}"
+
+- name: Install pihole
+  become: true
+  shell: "/tmp/pihole/automated\\ install/basic-install.sh --unattended"
+

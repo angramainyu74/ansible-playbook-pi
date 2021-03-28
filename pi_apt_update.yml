@@ -1,6 +1,6 @@
 ---
 - name: Update Pi
-  hosts: pis
+  hosts: all
 
   roles:
     - apt_update

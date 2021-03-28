@@ -1,0 +1,7 @@
+---
+- name: Install and configure pihole
+  hosts: all
+
+  roles:
+    - pihole
+

@@ -1,6 +1,6 @@
 ---
 - name: Ping check
-  hosts: pi0 
+  hosts: all
   become: true 
 
   tasks:

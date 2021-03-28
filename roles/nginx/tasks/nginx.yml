@@ -7,9 +7,23 @@
       - apache2-utils
     state: present
 
+- name: Create nginx directory
+  become: true
+  file:
+    path: /var/nginx
+    state: directory
+    mode: '0755'
+
+- name: Create nginx/html directory
+  become: true
+  file:
+    path: /var/nginx/html
+    state: directory
+    mode: '0755'
+
 - name: Copy index.html
   become: true
-  template: src=index.html dest=/var/www/html
+  template: src=index.html dest=/var/nginx/html
 
 - name: Remove index.nginx-debian.html
   become: true
@@ -25,25 +39,32 @@
 - name: Create files directory
   become: true
   file:
-    path: /var/www/html/files
+    path: /var/nginx/html/files
     state: directory
-    mode: '0744'
+    mode: '0755'
 
 - name: Check for htpasswd file
+  become: true
   stat:
-    path: /var/www/.htpasswd
+    path: /var/nginx/.htpasswd
   register: htpasswd_file
 
 - name: Create htpasswd file
   become: true
-  command: htpasswd -bc /var/www/.htpasswd {{ www_user }} {{ www_password }}
+  command: htpasswd -bc /var/nginx/.htpasswd {{ www_user }} {{ www_password }}
   when: htpasswd_file.stat.exists == false
 
-- name: Set www ownership
+- name: Set nginx ownership
   become: true
   file:
-    path: /var/www
+    path: /var/nginx
     owner: www-data
     group: www-data
     recurse: true
+
+- name: restart nginx
+  become: true
+  service: 
+    name: nginx
+    state: restarted
 

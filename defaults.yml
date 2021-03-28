@@ -3,5 +3,5 @@
   hosts: all
 
   roles:
-    - pi_defaults
+    - defaults
 

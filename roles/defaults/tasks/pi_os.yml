@@ -42,3 +42,10 @@
     line: "XKBLAYOUT=\"us\""
     state: present
 
+- name: Copy console-setup
+  become: true
+  template:
+    src: console-setup
+    dest: /etc/default/console-setup
+    mode: u=rw,g=r,o=r
+

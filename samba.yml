@@ -1,0 +1,7 @@
+---
+- name: Install and configure samba
+  hosts: all
+
+  roles:
+    - samba
+

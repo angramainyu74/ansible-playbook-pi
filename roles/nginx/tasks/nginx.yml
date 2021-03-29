@@ -13,6 +13,8 @@
     path: /var/nginx
     state: directory
     mode: '0755'
+    owner: www-data
+    group: www-data
 
 - name: Create nginx/html directory
   become: true
@@ -20,6 +22,8 @@
     path: /var/nginx/html
     state: directory
     mode: '0755'
+    owner: www-data
+    group: www-data
 
 - name: Copy index.html
   become: true
@@ -41,7 +45,9 @@
   file:
     path: /var/nginx/html/files
     state: directory
-    mode: '0755'
+    mode: '0777'
+    owner: www-data
+    group: www-data
 
 - name: Check for htpasswd file
   become: true
@@ -60,7 +66,6 @@
     path: /var/nginx
     owner: www-data
     group: www-data
-    recurse: true
 
 - name: restart nginx
   become: true

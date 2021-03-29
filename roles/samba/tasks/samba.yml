@@ -1,0 +1,27 @@
+---
+- name: Install samba
+  become: true
+  package:
+    name: 
+      - samba
+    state: present
+
+- name: Create files directory
+  become: true
+  file:
+    path: /var/nginx/html/files
+    state: directory
+    mode: '0777'
+
+- name: Copy smb.conf
+  become: true
+  template:
+    src: smb.conf
+    dest: /etc/samba/smb.conf
+
+- name: restart smbd
+  become: true
+  service: 
+    name: smbd
+    state: restarted
+

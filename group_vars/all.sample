@@ -1,0 +1,5 @@
+config_system_locale: 'en_US.UTF-8'
+config_system_language: 'en_US'
+www_user: 'webuser'
+www_password: 'webpass'
+pihole_password:

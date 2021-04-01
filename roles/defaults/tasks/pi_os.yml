@@ -42,6 +42,10 @@
     line: "XKBLAYOUT=\"us\""
     state: present
 
+- name: Run keyboard-configuration
+  become: true
+  command: dpkg-reconfigure --frontend noninteractive keyboard-configuration
+
 - name: Copy console-setup
   become: true
   template:
@@ -49,3 +53,16 @@
     dest: /etc/default/console-setup
     mode: u=rw,g=r,o=r
 
+- name: Ensures /etc/systemd/system/console-setup.service.d dir exists
+  become: true
+  file: 
+    path: /etc/systemd/system/console-setup.service.d
+    state: directory
+    mode: u=rwx,g=rx,o=rx
+
+- name: tmp race condition fix for console-setup.service
+  become: true
+  template:
+    src: override.conf
+    dest: /etc/systemd/system/console-setup.service.d/override.conf
+    mode: u=rwx,g=rx,o=rx

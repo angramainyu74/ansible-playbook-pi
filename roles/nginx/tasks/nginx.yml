@@ -29,6 +29,13 @@
   become: true
   template: src=index.html dest=/var/nginx/html
 
+- name: Set index.html owner
+  become: true
+  file:
+    path: /var/nginx/html/index.html
+    owner: www-data
+    group: www-data
+
 - name: Remove index.nginx-debian.html
   become: true
   file:
@@ -67,9 +74,14 @@
     owner: www-data
     group: www-data
 
-- name: restart nginx
+- name: Stop nginx
   become: true
   service: 
     name: nginx
-    state: restarted
+    state: stopped
 
+- name: Start nginx
+  become: true
+  service:
+    name: nginx
+    state: started

@@ -3,3 +3,5 @@ config_system_language: 'en_US'
 www_user: 'webuser'
 www_password: 'webpass'
 pihole_password:
+mumble_password: 'mumblepass'
+mumble_superuser_password: 'mumblesuperpass'

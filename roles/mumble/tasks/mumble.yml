@@ -32,7 +32,7 @@
     #  debconf:
     #    name: mumble-server
     #    question: mumble-server/password
-    #    value: "secretadminpass"
+    #    value: "{{ mumble_superuser_password }}"
     #    vtype: password
     #  no_log: true
 
@@ -46,7 +46,7 @@
     backup: true
   with_items:
     - regexp: "^serverpassword="
-      line: "serverpassword=testserverpass"
+      line: "serverpassword={{ mumble_password }}"
     - regexp: "^bandwidth="
       line: "bandwidth=128000"
     - regexp: "^users="
@@ -60,6 +60,6 @@
 
 - name: Set admin password via murmurd since debconf doesn't work
   become: true
-  shell: murmurd -ini /etc/mumble-server.ini -supw secretadminpass
+  shell: murmurd -ini /etc/mumble-server.ini -supw {{ mumble_superuser_password }}
   register: murmur_supw
   failed_when: "'Superuser password set on server' not in murmur_supw.stderr"

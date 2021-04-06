@@ -1,0 +1,43 @@
+---
+- name: Check if ProfileGem exists
+  stat: path=~/ProfileGem/load.sh
+  register: profilegem_status
+
+- name: Install Git
+  become: true
+  package:
+    name: git
+    state: present
+  when: not(profilegem_status.stat.exists)
+
+- name: Git ProfileGem
+  git:
+    repo: https://github.com/dimo414/ProfileGem.git
+    dest: ~/ProfileGem
+  when: not(profilegem_status.stat.exists)
+
+- name: Git PromptGem
+  git:
+    repo: https://github.com/dimo414/prompt.gem.git
+    dest: ~/ProfileGem/prompt.gem
+  when: not(profilegem_status.stat.exists)
+
+- name: Test .bashrc for line
+  shell: grep -c "^source ~/ProfileGem/load.sh" ~/.bashrc || true
+  register: test_bashrc
+
+- name: Add ProfileGem to .bashrc 
+  lineinfile:
+    dest: ~/.bashrc
+    line: source ~/ProfileGem/load.sh
+  when: test_bashrc.stdout == "0"
+
+- name: Test local.conf.sh for line
+  shell: grep -c "^#GEM prompt" ~/ProfileGem/local.conf.sh || true
+  register: test_localconf
+
+- name: Add prompt to local.conf.sh 
+  lineinfile:
+    dest: ~/ProfileGem/local.conf.sh
+    line: '#GEM prompt'
+  when: test_localconf.stdout == "0"

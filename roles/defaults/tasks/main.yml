@@ -3,6 +3,7 @@
   - import_tasks: pi_os.yml
   - import_tasks: tmux.yml
   - import_tasks: ack.yml
+  - import_tasks: profilegem.yml
   - import_tasks: zram.yml
   - import_tasks: log2ram.yml
   - import_tasks: disable_default_swap.yml

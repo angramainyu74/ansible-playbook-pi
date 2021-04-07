@@ -72,3 +72,14 @@
     src: override.conf
     dest: /etc/systemd/system/console-setup.service.d/override.conf
     mode: u=rwx,g=rx,o=rx
+
+- name: Check if .bash_aliases exists
+  stat:
+    path: ~/.bash_aliases
+  register: bashaliases
+
+- name: Copy .bash_aliases
+  template:
+    src: .bash_aliases
+    dest: ~/.bash_aliases
+  when: not( bashaliases.stat.exists )

@@ -53,8 +53,24 @@
       line: "IPV4_ADDRESS={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/16"
     - regexp: "^WEBPASSWORD="
       line: "WEBPASSWORD={{ encpasstxt }}"
+  when: not(pihole_status.stat.exists)
 
 - name: Install pihole
   become: true
   shell: "/tmp/pihole/automated\\ install/basic-install.sh --unattended"
+  when: not(pihole_status.stat.exists)
 
+- name: Change pihole port
+  become: true
+  lineinfile:
+    dest: /etc/lighttpd/lighttpd.conf
+    regexp: "^server.port"
+    line: "server.port = {{ pihole_webport }}"
+  register: lighttpdconf
+
+- name: Restart lighttpd
+  become: true
+  service:
+    name: lighttpd
+    state: restarted
+  when: lighttpdconf.changed

@@ -3,5 +3,6 @@ config_system_language: 'en_US'
 www_user: 'webuser'
 www_password: 'webpass'
 pihole_password:
+pihole_webport: 8008
 mumble_password: 'mumblepass'
 mumble_superuser_password: 'mumblesuperpass'

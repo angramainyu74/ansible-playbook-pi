@@ -79,3 +79,8 @@
   service:
     name: nginx
     state: restarted
+  register: nginx_restart
+  ignore_errors: true
+
+- fail: msg="{{ nginx_restart.stdout }} "
+  when: "nginx_restart.changed == false and 'timed out' not in nginx_restart.msg"

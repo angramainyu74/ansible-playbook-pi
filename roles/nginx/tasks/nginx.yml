@@ -45,7 +45,6 @@
 - name: Copy nginx file
   become: true
   template: src=default.conf dest=/etc/nginx/sites-enabled/default
-  notify: restart nginx
 
 - name: Create files directory
   become: true

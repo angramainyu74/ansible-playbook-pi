@@ -11,10 +11,22 @@
     state: present
   when: stat_tmux.stat.exists==false
 
+- name: Install dos2unix
+  become: true
+  package:
+    name: dos2unix
+    state: present
+  when: stat_tmux.stat.exists==false
+
 - name: Download tmux config
   become: false
   get_url:
     url: https://pastebin.com/raw/Vy5jaWGg
     dest: ~/.tmux.conf
+  when: stat_tmux.stat.exists==false
+
+- name: Run dos2unix on .tmux.conf
+  become: false
+  shell: "dos2unix ~/.tmux.conf"
   when: stat_tmux.stat.exists==false
         

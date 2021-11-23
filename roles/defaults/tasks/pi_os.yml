@@ -83,3 +83,12 @@
     src: .bash_aliases
     dest: ~/.bash_aliases
   when: not( bashaliases.stat.exists )
+
+- name: Ensure ssh QoS
+  become: true
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^IPQOS"
+    line: "IPQoS cs0 cs0"
+    state: present
+

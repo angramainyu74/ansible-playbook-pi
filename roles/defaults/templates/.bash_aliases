@@ -1,4 +1,5 @@
-alias temp='/opt/vc/bin/vcgencmd measure_temp'
+#alias temp='/opt/vc/bin/vcgencmd measure_temp'
+alias temp='vcgencmd measure_temp'
 alias disk='df -hl | grep -v tmpfs'
 
 alias ll='ls -l'
